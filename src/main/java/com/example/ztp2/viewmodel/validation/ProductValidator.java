@@ -1,4 +1,4 @@
-package com.example.ztp2.model.validation;
+package com.example.ztp2.viewmodel.validation;
 
 import com.example.ztp2.model.ProductRequest;
 

@@ -1,4 +1,4 @@
-package com.example.ztp2.model.validation;
+package com.example.ztp2.viewmodel.validation;
 
 public interface Specification<T> {
     ValidationResult isSatisfiedBy(T t);

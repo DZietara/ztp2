@@ -1,5 +1,6 @@
-package com.example.ztp2;
+package com.example.ztp2.view;
 
+import com.example.ztp2.MainApplication;
 import com.example.ztp2.model.ProductModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -11,6 +12,7 @@ public class ProductDetailsViewController {
     @FXML
     private Label productDetailsLabel;
 
+    @FXML
     public void setProductDetails(ProductModel product) {
         productDetailsLabel.setText(
                 "ID: " + product.getId() +

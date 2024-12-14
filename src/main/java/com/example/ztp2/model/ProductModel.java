@@ -1,4 +1,4 @@
-package com.example.ztp2;
+package com.example.ztp2.model;
 
 public class ProductModel {
     private Long id;

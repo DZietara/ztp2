@@ -1,4 +1,4 @@
-package com.example.ztp2;
+package com.example.ztp2.model;
 
 import java.math.BigDecimal;
 

@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class MainApplication extends Application {
     private static Stage primaryStage;
 
     @Override
@@ -18,7 +18,7 @@ public class HelloApplication extends Application {
     }
 
     public static void loadProductListView() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("product-list-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("product-list-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         primaryStage.setTitle("Product List");
         primaryStage.setScene(scene);

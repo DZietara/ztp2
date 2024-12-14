@@ -1,10 +1,9 @@
 package com.example.ztp2.view;
 
-import com.example.ztp2.common.AlertService;
 import com.example.ztp2.MainApplication;
-import com.example.ztp2.viewmodel.ProductViewModel;
+import com.example.ztp2.common.AlertService;
 import com.example.ztp2.model.ProductModel;
-import com.example.ztp2.model.ProductRequest;
+import com.example.ztp2.viewmodel.ProductViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,32 +17,26 @@ import javafx.util.Callback;
 
 import java.math.BigDecimal;
 
-public class ProductViewController {
+public class ProductListViewController {
 
     @FXML
     private TableView<ProductModel> productTable;
-
     @FXML
     private TableColumn<ProductModel, Long> idColumn;
-
     @FXML
     private TableColumn<ProductModel, String> nameColumn;
-
     @FXML
     private TableColumn<ProductModel, String> statusColumn;
-
     @FXML
     private TableColumn<ProductModel, Integer> quantityColumn;
-
     @FXML
     private TableColumn<ProductModel, BigDecimal> priceColumn;
 
     private final ProductViewModel viewModel;
-    private final AlertService alertService;
 
-    public ProductViewController() {
-        this.viewModel = new ProductViewModel();
-        this.alertService = new AlertService();
+    public ProductListViewController() {
+        AlertService alertService = AlertService.getInstance();
+        this.viewModel = new ProductViewModel(alertService);
     }
 
     @FXML
@@ -61,11 +54,13 @@ public class ProductViewController {
             public TableCell<ProductModel, Void> call(TableColumn<ProductModel, Void> param) {
                 return new TableCell<ProductModel, Void>() {
                     private final Button viewButton  = new Button("View Details");
+                    private final Button editButton = new Button("Edit");
                     private final Button deleteButton = new Button("Delete");
 
                     {
                         viewButton.setOnAction(event -> handleViewDetails(getTableRow().getItem()));
                         deleteButton.setOnAction(event -> handleDeleteProduct(getTableRow().getItem()));
+                        editButton.setOnAction(event -> handleEditProduct(getTableRow().getItem()));
                     }
 
                     @Override
@@ -75,7 +70,7 @@ public class ProductViewController {
                             setGraphic(null);
                         } else {
                             HBox buttonBox = new HBox(10);
-                            buttonBox.getChildren().addAll(viewButton, deleteButton);
+                            buttonBox.getChildren().addAll(viewButton, editButton, deleteButton);
                             setGraphic(buttonBox);
                         }
                     }
@@ -86,25 +81,16 @@ public class ProductViewController {
         productTable.getColumns().add(actionColumn);
         productTable.setItems(viewModel.getProducts());
         viewModel.loadProducts();
-
     }
 
     @FXML
     public void handleRefresh() {
-        try {
-            viewModel.loadProducts();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        viewModel.loadProducts();
     }
 
     @FXML
     public void handleAddNewProduct() {
-        try {
-            openAddProductForm();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        openAddProductForm();
     }
 
     private void openAddProductForm() {
@@ -135,55 +121,53 @@ public class ProductViewController {
 
         try {
             String name = nameField.getText();
-            BigDecimal price = new BigDecimal(priceField.getText());
-            Integer quantity = Integer.parseInt(quantityField.getText());
+            String price = priceField.getText();
+            String quantity = quantityField.getText();
 
-            ProductRequest productRequest = new ProductRequest(name, price, quantity);
-
-            viewModel.addProduct(productRequest);
-            alertService.showSuccess("Product added successfully", "New product has been added.");
-
-            productTable.setItems(viewModel.getProducts());
-            formStage.close();
+            boolean isValid = viewModel.addProduct(name, price, quantity);
+            if (isValid) {
+                formStage.close();
+            }
         } catch (Exception e) {
-            alertService.showError("Failed to add product");
             e.printStackTrace();
         }
     }
 
     private void handleViewDetails(ProductModel product) {
         try {
-            // Pobranie szczegółów produktu
             ProductModel productDetails = viewModel.getProductDetails(product.getId());
-
-            // Załadowanie widoku szczegółów produktu
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ztp2/product-details-view.fxml"));
             Parent productDetailsRoot = loader.load();
 
-            // Pobranie kontrolera i przekazanie danych produktu
             ProductDetailsViewController controller = loader.getController();
             controller.setProductDetails(productDetails);
 
-            // Przełączenie sceny na widok szczegółów produktu
             MainApplication.switchScene(productDetailsRoot);
         } catch (Exception e) {
-            alertService.showError("Failed to load product details view");
+            e.printStackTrace();
+        }
+    }
+
+    private void handleEditProduct(ProductModel product) {
+        try {
+            ProductModel productDetails = viewModel.getProductDetails(product.getId());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/ztp2/product-edit-view.fxml"));
+            Parent editProductRoot = loader.load();
+
+            ProductEditViewController controller = loader.getController();
+            controller.setProduct(productDetails);
+
+            MainApplication.switchScene(editProductRoot);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void handleDeleteProduct(ProductModel product) {
         try {
-            if (product != null) {
-                viewModel.deleteProduct(product);
-                productTable.getItems().remove(product);
-                alertService.showSuccess(
-                        "Product deleted successfully",
-                        String.format("%d. %s has been deleted", product.getId(), product.getName())
-                );
-            }
+            viewModel.deleteProduct(product);
+            productTable.getItems().remove(product);
         } catch (Exception e) {
-            alertService.showError("Failed to delete product ID: " + product.getId());
             e.printStackTrace();
         }
     }
