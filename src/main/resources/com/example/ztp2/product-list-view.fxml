@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.ztp2.view.ProductViewController">
+    <Button text="Refresh" onAction="#handleRefresh"/>
+    <Button text="Add new product" onAction="#handleAddNewProduct"/>
+    <TableView fx:id="productTable">
+        <columns>
+            <TableColumn text="ID" fx:id="idColumn" />
+            <TableColumn text="Name" fx:id="nameColumn" />
+            <TableColumn text="Price" fx:id="priceColumn" />
+            <TableColumn text="Quantity" fx:id="quantityColumn" />
+            <TableColumn text="Status" fx:id="statusColumn" />
+        </columns>
+    </TableView>
+</VBox>
